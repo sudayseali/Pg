@@ -9,12 +9,16 @@ import {
 import {
   formatUsd,
   generateIdempotencyKey,
+  getTaskCompletedCount,
   isImageUrl,
   isRejectedTelegramEmail,
+  parseAutoTelegramProof,
+  parseJobLengthMinutes,
   StructuredApiError,
   unwrapAdminApiResponse,
   validateBalanceAdjustment,
   validateRejectReason,
+  validateTelegramChatId,
 } from './formatters';
 
 test('RBAC: super_admin has all permissions including manage_admins', () => {
@@ -120,4 +124,49 @@ test('Idempotency key and image detection behave deterministically', () => {
   assert.equal(isImageUrl('https://example.com/task-link'), false);
 
   assert.equal(formatUsd(1250.5), '$1,250.50');
+});
+
+test('Micro-task current_completions fallback prefers current_completions over completions_count', () => {
+  assert.equal(getTaskCompletedCount({ current_completions: 18, completions_count: 12 }), 18);
+  assert.equal(getTaskCompletedCount({ current_completions: 0, completions_count: 5 }), 0);
+  assert.equal(getTaskCompletedCount({ completions_count: 9 }), 9);
+  assert.equal(getTaskCompletedCount({}), 0);
+});
+
+test('auto_telegram_join chat ID validation accepts @username and -100... IDs, rejects private invite links', () => {
+  assert.deepEqual(validateTelegramChatId('@PayvoraCommunity'), {
+    valid: true,
+    normalized: '@PayvoraCommunity',
+  });
+  assert.deepEqual(validateTelegramChatId(' -1001234567890 '), {
+    valid: true,
+    normalized: '-1001234567890',
+  });
+
+  const privateInvite = validateTelegramChatId('https://t.me/+AbCdEf123456');
+  assert.equal(privateInvite.valid, false);
+  assert.match(privateInvite.error ?? '', /-100/);
+
+  const joinchatInvite = validateTelegramChatId('t.me/joinchat/AAAAAE');
+  assert.equal(joinchatInvite.valid, false);
+  assert.equal(validateTelegramChatId('').valid, false);
+  assert.equal(validateTelegramChatId('invalid-channel').valid, false);
+});
+
+test('Job length parser and auto_telegram_join proof parser extract structured metadata', () => {
+  assert.equal(parseJobLengthMinutes('2 mins'), 2);
+  assert.equal(parseJobLengthMinutes('15'), 15);
+  assert.equal(parseJobLengthMinutes(5), 5);
+  assert.equal(parseJobLengthMinutes(''), undefined);
+
+  assert.deepEqual(parseAutoTelegramProof('Uploaded screenshot'), { isAuto: false });
+  const parsed = parseAutoTelegramProof('auto_telegram_join:@PayvoraCommunity:member');
+  assert.equal(parsed.isAuto, true);
+  assert.equal(parsed.chatId, '@PayvoraCommunity');
+  assert.equal(parsed.memberStatus, 'member');
+
+  const parsedKv = parseAutoTelegramProof('auto_telegram_join:chat=-1001234567890|status=administrator');
+  assert.equal(parsedKv.isAuto, true);
+  assert.equal(parsedKv.chatId, '-1001234567890');
+  assert.equal(parsedKv.memberStatus, 'administrator');
 });

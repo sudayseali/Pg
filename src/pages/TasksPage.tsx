@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   Archive,
+  Bot,
   Check,
   CheckCircle2,
   ExternalLink,
@@ -8,19 +9,34 @@ import {
   Pause,
   Play,
   Plus,
+  ShieldCheck,
   X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { adminApi } from '../lib/adminApi';
 import { hasPermission } from '../lib/rbac';
-import { formatDateTime, formatNumber, formatUsd, isImageUrl, isSafeHttpUrl } from '../lib/formatters';
+import {
+  formatDateTime,
+  formatNumber,
+  formatUsd,
+  getTaskCompletedCount,
+  isImageUrl,
+  isSafeHttpUrl,
+  parseAutoTelegramProof,
+  parseJobLengthMinutes,
+  validateTelegramChatId,
+} from '../lib/formatters';
 import { AccessDenied } from '../components/ui/AccessDenied';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { Pagination } from '../components/ui/Pagination';
 import { Modal } from '../components/ui/Modal';
 import { TableSkeleton } from '../components/ui/Skeletons';
-import type { MicroTask, TaskSubmission } from '../types/admin';
+import type { MicroTask, TaskSubmission, TaskVerificationType } from '../types/admin';
+
+const DEFAULT_MANUAL_PROOF_INSTRUCTIONS = 'Upload a screenshot showing task completion';
+const DEFAULT_AUTO_PROOF_INSTRUCTIONS =
+  'Join the Telegram channel/group and tap Verify in Payvora for instant approval.';
 
 type TasksSubTab = 'tasks' | 'submissions';
 type SubmissionFilter = 'pending' | 'approved' | 'rejected' | 'all';
@@ -41,16 +57,31 @@ export function TasksPage() {
   const [tasksLoading, setTasksLoading] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [taskForm, setTaskForm] = useState({
+  const [taskForm, setTaskForm] = useState<{
+    title: string;
+    description: string;
+    category: string;
+    reward: string;
+    maxCompletions: string;
+    targetUrl: string;
+    jobLength: string;
+    proofInstructions: string;
+    verificationType: TaskVerificationType;
+    verificationChatId: string;
+  }>({
     title: '',
     description: '',
     category: 'social',
     reward: '0.25',
     maxCompletions: '100',
     targetUrl: '',
-    jobLength: '2 mins',
-    proofInstructions: 'Upload a screenshot showing task completion',
+    jobLength: '2',
+    proofInstructions: DEFAULT_MANUAL_PROOF_INSTRUCTIONS,
+    verificationType: 'manual_screenshot',
+    verificationChatId: '',
   });
+  const [showAutoProofField, setShowAutoProofField] = useState(false);
+  const [chatIdError, setChatIdError] = useState<string | null>(null);
 
   // Submissions state
   const [subFilter, setSubFilter] = useState<SubmissionFilter>('pending');
@@ -118,19 +149,67 @@ export function TasksPage() {
     return <AccessDenied role={admin?.role} required="Tasks & Proof Submissions" />;
   }
 
+  function handleVerificationTypeChange(nextType: TaskVerificationType) {
+    setChatIdError(null);
+    setTaskForm((prev) => {
+      let nextInstructions = prev.proofInstructions;
+      if (
+        nextType === 'auto_telegram_join' &&
+        (!prev.proofInstructions.trim() ||
+          prev.proofInstructions.trim() === DEFAULT_MANUAL_PROOF_INSTRUCTIONS)
+      ) {
+        nextInstructions = DEFAULT_AUTO_PROOF_INSTRUCTIONS;
+      } else if (
+        nextType === 'manual_screenshot' &&
+        (!prev.proofInstructions.trim() ||
+          prev.proofInstructions.trim() === DEFAULT_AUTO_PROOF_INSTRUCTIONS)
+      ) {
+        nextInstructions = DEFAULT_MANUAL_PROOF_INSTRUCTIONS;
+      }
+      return {
+        ...prev,
+        verificationType: nextType,
+        proofInstructions: nextInstructions,
+      };
+    });
+  }
+
   async function handleCreateTask(e: React.FormEvent) {
     e.preventDefault();
     if (creating) return;
+    setChatIdError(null);
+
     const rewardNum = Number.parseFloat(taskForm.reward);
     const maxNum = Number.parseInt(taskForm.maxCompletions, 10);
-    if (!taskForm.title.trim() || !taskForm.targetUrl.trim() || !Number.isFinite(rewardNum) || rewardNum <= 0 || !Number.isFinite(maxNum) || maxNum <= 0) {
+    if (
+      !taskForm.title.trim() ||
+      !taskForm.description.trim() ||
+      !taskForm.targetUrl.trim() ||
+      !Number.isFinite(rewardNum) ||
+      rewardNum <= 0 ||
+      !Number.isFinite(maxNum) ||
+      maxNum <= 0
+    ) {
       pushToast({
         variant: 'error',
         title: 'Invalid task fields',
-        description: 'Provide a valid title, target URL, positive reward, and max completions.',
+        description:
+          'Provide a valid title, description, target URL, positive reward, and max completions.',
       });
       return;
     }
+
+    let normalizedChatId: string | undefined;
+    if (taskForm.verificationType === 'auto_telegram_join') {
+      const chatValidation = validateTelegramChatId(taskForm.verificationChatId);
+      if (!chatValidation.valid || !chatValidation.normalized) {
+        setChatIdError(chatValidation.error ?? 'Invalid Telegram Chat ID.');
+        return;
+      }
+      normalizedChatId = chatValidation.normalized;
+    }
+
+    const parsedMinutes = parseJobLengthMinutes(taskForm.jobLength);
 
     setCreating(true);
     try {
@@ -141,8 +220,10 @@ export function TasksPage() {
         reward: rewardNum,
         maxCompletions: maxNum,
         targetUrl: taskForm.targetUrl.trim(),
-        jobLength: taskForm.jobLength.trim(),
-        proofInstructions: taskForm.proofInstructions.trim(),
+        jobLength: parsedMinutes ?? (taskForm.jobLength.trim() || undefined),
+        proofInstructions: taskForm.proofInstructions.trim() || undefined,
+        verificationType: taskForm.verificationType,
+        verificationChatId: normalizedChatId,
       });
       pushToast({
         variant: 'success',
@@ -150,6 +231,8 @@ export function TasksPage() {
         description: 'Task is live and Telegram alert broadcast triggered.',
       });
       setCreateOpen(false);
+      setShowAutoProofField(false);
+      setChatIdError(null);
       setTaskForm({
         title: '',
         description: '',
@@ -157,8 +240,10 @@ export function TasksPage() {
         reward: '0.25',
         maxCompletions: '100',
         targetUrl: '',
-        jobLength: '2 mins',
-        proofInstructions: 'Upload a screenshot showing task completion',
+        jobLength: '2',
+        proofInstructions: DEFAULT_MANUAL_PROOF_INSTRUCTIONS,
+        verificationType: 'manual_screenshot',
+        verificationChatId: '',
       });
       await Promise.all([loadTasks(), refreshAdminData()]);
     } catch (err) {
@@ -223,19 +308,23 @@ export function TasksPage() {
     }
   }
 
-  const proofSource = selectedSub?.proof_signed_url || selectedSub?.proof_url || selectedSub?.proof_text || '';
+  const autoProof = parseAutoTelegramProof(selectedSub?.proof_text ?? selectedSub?.proof_data);
+  const rawProofText = selectedSub?.proof_text || selectedSub?.proof_data || '';
+  const proofSource =
+    selectedSub?.proof_signed_url || selectedSub?.proof_url || rawProofText;
   const showImagePreview =
     selectedSub &&
+    !autoProof.isAuto &&
     !brokenImgIds[selectedSub.id] &&
     (isImageUrl(selectedSub.proof_signed_url) ||
       isImageUrl(selectedSub.proof_url) ||
-      isImageUrl(selectedSub.proof_text));
+      isImageUrl(rawProofText));
   const previewImageUrl = isImageUrl(selectedSub?.proof_signed_url)
     ? selectedSub?.proof_signed_url
     : isImageUrl(selectedSub?.proof_url)
       ? selectedSub?.proof_url
-      : isImageUrl(selectedSub?.proof_text)
-        ? selectedSub?.proof_text
+      : isImageUrl(rawProofText)
+        ? rawProofText
         : null;
 
   return (
@@ -316,6 +405,7 @@ export function TasksPage() {
                   <tr>
                     <th className="px-5 py-3">Task</th>
                     <th className="px-5 py-3">Category</th>
+                    <th className="px-5 py-3">Verification</th>
                     <th className="px-5 py-3 text-right">Reward</th>
                     <th className="px-5 py-3">Slot Progress</th>
                     <th className="px-5 py-3">Status</th>
@@ -325,7 +415,9 @@ export function TasksPage() {
                 <tbody className="divide-y divide-slate-800/60">
                   {tasks.map((task) => {
                     const max = Math.max(1, task.max_completions || 1);
-                    const pct = Math.min(100, Math.round(((task.completions_count || 0) / max) * 100));
+                    const completedCount = getTaskCompletedCount(task);
+                    const pct = Math.min(100, Math.round((completedCount / max) * 100));
+                    const isAutoJoin = task.verification_type === 'auto_telegram_join';
                     return (
                       <tr key={task.id} className="hover:bg-slate-800/30">
                         <td className="px-5 py-3.5">
@@ -335,6 +427,26 @@ export function TasksPage() {
                           </p>
                         </td>
                         <td className="px-5 py-3.5 text-xs text-slate-300">{task.category}</td>
+                        <td className="px-5 py-3.5">
+                          {isAutoJoin ? (
+                            <div>
+                              <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-300 whitespace-nowrap">
+                                <Bot className="h-3 w-3 shrink-0" aria-hidden="true" />
+                                <span>Instant Bot Verify</span>
+                              </span>
+                              {task.verification_chat_id ? (
+                                <p className="mt-1 font-mono text-[11px] text-slate-400">
+                                  {task.verification_chat_id}
+                                </p>
+                              ) : null}
+                            </div>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-800/80 px-2 py-0.5 text-xs font-medium text-slate-300 whitespace-nowrap">
+                              <ImageIcon className="h-3 w-3 shrink-0" aria-hidden="true" />
+                              <span>Manual Screenshot</span>
+                            </span>
+                          )}
+                        </td>
                         <td className="px-5 py-3.5 text-right font-mono font-semibold tabular-nums text-emerald-400">
                           {formatUsd(task.reward)}
                         </td>
@@ -342,8 +454,7 @@ export function TasksPage() {
                           <div className="w-40">
                             <div className="flex justify-between font-mono text-xs tabular-nums text-slate-300">
                               <span>
-                                {formatNumber(task.completions_count)} /{' '}
-                                {formatNumber(task.max_completions)}
+                                {formatNumber(completedCount)} / {formatNumber(task.max_completions)}
                               </span>
                               <span>{pct}%</span>
                             </div>
@@ -516,7 +627,35 @@ export function TasksPage() {
                   {/* Proof Media / Text */}
                   <div className="rounded-lg border border-slate-800 bg-[#070B19] p-4">
                     <p className="mb-2 text-xs font-medium text-slate-400">Submitted Proof</p>
-                    {showImagePreview && previewImageUrl ? (
+                    {autoProof.isAuto ? (
+                      <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs">
+                        <div className="flex items-center gap-2 font-semibold text-emerald-300">
+                          <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-400" />
+                          <span>Auto-Verified via Telegram Bot (getChatMember)</span>
+                        </div>
+                        <div className="mt-2.5 space-y-1 text-slate-200">
+                          {autoProof.chatId ? (
+                            <p>
+                              <span className="text-slate-400">Channel / Chat: </span>
+                              <span className="font-mono text-emerald-200">{autoProof.chatId}</span>
+                            </p>
+                          ) : null}
+                          {autoProof.memberStatus ? (
+                            <p>
+                              <span className="text-slate-400">Member Status: </span>
+                              <span className="font-mono text-emerald-200">
+                                {autoProof.memberStatus}
+                              </span>
+                            </p>
+                          ) : null}
+                          {autoProof.metadata && !autoProof.chatId && !autoProof.memberStatus ? (
+                            <p className="font-mono break-all text-emerald-200">
+                              {autoProof.metadata}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : showImagePreview && previewImageUrl ? (
                       <div className="space-y-3">
                         <img
                           src={previewImageUrl}
@@ -539,9 +678,9 @@ export function TasksPage() {
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        {selectedSub.proof_text ? (
+                        {rawProofText ? (
                           <p className="whitespace-pre-wrap break-words text-sm text-slate-200">
-                            {selectedSub.proof_text}
+                            {rawProofText}
                           </p>
                         ) : null}
                         {isSafeHttpUrl(proofSource) ? (
@@ -555,7 +694,7 @@ export function TasksPage() {
                             <span>Open Proof Link</span>
                             <ExternalLink className="h-3 w-3" />
                           </a>
-                        ) : !selectedSub.proof_text ? (
+                        ) : !rawProofText ? (
                           <p className="text-xs text-slate-500">No proof payload provided.</p>
                         ) : null}
                       </div>
@@ -642,6 +781,60 @@ export function TasksPage() {
             />
           </div>
 
+          <div>
+            <label
+              htmlFor="task-verification-mode"
+              className="mb-1 block text-xs font-medium text-slate-300"
+            >
+              Verification Mode
+            </label>
+            <select
+              id="task-verification-mode"
+              value={taskForm.verificationType}
+              onChange={(e) =>
+                handleVerificationTypeChange(e.target.value as TaskVerificationType)
+              }
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="manual_screenshot">Manual Screenshot Review</option>
+              <option value="auto_telegram_join">
+                Instant Telegram Bot Join Check (getChatMember)
+              </option>
+            </select>
+          </div>
+
+          {taskForm.verificationType === 'auto_telegram_join' ? (
+            <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/5 p-3.5 space-y-2">
+              <label
+                htmlFor="task-chat-id"
+                className="block text-xs font-medium text-emerald-300"
+              >
+                Telegram Channel / Group ID
+              </label>
+              <input
+                id="task-chat-id"
+                required
+                type="text"
+                value={taskForm.verificationChatId}
+                onChange={(e) => {
+                  setTaskForm((p) => ({ ...p, verificationChatId: e.target.value }));
+                  if (chatIdError) setChatIdError(null);
+                }}
+                placeholder="@PayvoraCommunity or -1001234567890"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+              />
+              {chatIdError ? <p className="text-xs text-red-400">{chatIdError}</p> : null}
+              <p className="text-[11px] leading-relaxed text-slate-400">
+                The Payvora Telegram Bot must be added as an{' '}
+                <span className="font-semibold text-slate-200">Administrator</span> in that
+                channel/group for automatic <span className="font-mono">getChatMember</span> checks
+                to work. Private <span className="font-mono">t.me/+...</span> invite links require
+                the numeric <span className="font-mono">-100...</span> chat ID here alongside the
+                invite link in Target URL.
+              </p>
+            </div>
+          ) : null}
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="task-category" className="mb-1 block text-xs font-medium text-slate-300">
@@ -658,14 +851,15 @@ export function TasksPage() {
             </div>
             <div>
               <label htmlFor="task-length" className="mb-1 block text-xs font-medium text-slate-300">
-                Estimated Time
+                Est. Duration (Minutes)
               </label>
               <input
                 id="task-length"
-                type="text"
+                type="number"
+                min="1"
                 value={taskForm.jobLength}
                 onChange={(e) => setTaskForm((p) => ({ ...p, jobLength: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -719,29 +913,55 @@ export function TasksPage() {
 
           <div>
             <label htmlFor="task-desc" className="mb-1 block text-xs font-medium text-slate-300">
-              Description
+              Description <span className="text-red-400">*</span>
             </label>
             <textarea
               id="task-desc"
+              required
               rows={2}
               value={taskForm.description}
               onChange={(e) => setTaskForm((p) => ({ ...p, description: e.target.value }))}
+              placeholder="Clear instructions describing what the user must complete"
               className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
-          <div>
-            <label htmlFor="task-proof" className="mb-1 block text-xs font-medium text-slate-300">
-              Proof Instructions
-            </label>
-            <input
-              id="task-proof"
-              type="text"
-              value={taskForm.proofInstructions}
-              onChange={(e) => setTaskForm((p) => ({ ...p, proofInstructions: e.target.value }))}
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
-            />
-          </div>
+          {taskForm.verificationType === 'manual_screenshot' || showAutoProofField ? (
+            <div>
+              <div className="mb-1 flex items-center justify-between">
+                <label htmlFor="task-proof" className="text-xs font-medium text-slate-300">
+                  Proof Instructions
+                </label>
+                {taskForm.verificationType === 'auto_telegram_join' ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowAutoProofField(false)}
+                    className="text-[11px] text-slate-400 hover:text-slate-200"
+                  >
+                    Hide
+                  </button>
+                ) : null}
+              </div>
+              <input
+                id="task-proof"
+                type="text"
+                value={taskForm.proofInstructions}
+                onChange={(e) => setTaskForm((p) => ({ ...p, proofInstructions: e.target.value }))}
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#070B19] px-3 py-2 text-xs text-slate-400">
+              <span>Bot verification prompt defaulted automatically.</span>
+              <button
+                type="button"
+                onClick={() => setShowAutoProofField(true)}
+                className="font-medium text-blue-400 hover:text-blue-300"
+              >
+                Customize hint
+              </button>
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <button

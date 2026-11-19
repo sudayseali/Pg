@@ -131,3 +131,103 @@ export function generateIdempotencyKey(prefix = 'bal'): string {
   const key = `${prefix}-${randomPart}`;
   return key.length >= 8 ? key : `${key}-00000000`;
 }
+
+export function getTaskCompletedCount(task: {
+  current_completions?: number | null;
+  completions_count?: number | null;
+}): number {
+  return task.current_completions ?? task.completions_count ?? 0;
+}
+
+export function validateTelegramChatId(chatIdRaw: string): {
+  valid: boolean;
+  normalized?: string;
+  error?: string;
+} {
+  const trimmed = chatIdRaw.trim();
+  if (!trimmed) {
+    return {
+      valid: false,
+      error: 'Telegram Channel / Group ID is required for Instant Bot Verify tasks.',
+    };
+  }
+
+  const lower = trimmed.toLowerCase();
+  if (lower.includes('t.me/+') || lower.includes('t.me/joinchat/')) {
+    return {
+      valid: false,
+      error:
+        'Private invite links (t.me/+... or t.me/joinchat/...) cannot be used as the Chat ID. Enter the numeric -100... chat ID here and put the invite link in Target URL.',
+    };
+  }
+
+  if (/^-\d{5,}$/.test(trimmed) || /^@[a-zA-Z0-9_]{4,}$/.test(trimmed)) {
+    return { valid: true, normalized: trimmed };
+  }
+
+  return {
+    valid: false,
+    error: 'Enter a valid @channel_username or numeric chat ID (e.g. -1001234567890).',
+  };
+}
+
+export function parseJobLengthMinutes(raw: string | number | undefined): number | undefined {
+  if (typeof raw === 'number') {
+    return Number.isFinite(raw) && raw > 0 ? Math.round(raw) : undefined;
+  }
+  if (!raw) return undefined;
+  const match = raw.trim().match(/\d+/);
+  if (!match) return undefined;
+  const parsed = Number.parseInt(match[0], 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+export interface AutoTelegramProofInfo {
+  isAuto: boolean;
+  metadata?: string;
+  chatId?: string;
+  memberStatus?: string;
+}
+
+export function parseAutoTelegramProof(
+  proofValue: string | null | undefined,
+): AutoTelegramProofInfo {
+  if (!proofValue) return { isAuto: false };
+  const trimmed = proofValue.trim();
+  if (!trimmed.startsWith('auto_telegram_join:')) {
+    return { isAuto: false };
+  }
+
+  const remainder = trimmed.slice('auto_telegram_join:'.length).trim();
+  if (!remainder) {
+    return { isAuto: true };
+  }
+
+  const parts = remainder
+    .split(/[:|]/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  let chatId: string | undefined;
+  let memberStatus: string | undefined;
+
+  for (const part of parts) {
+    if (part.startsWith('status=')) {
+      memberStatus = part.slice('status='.length);
+    } else if (part.startsWith('chat=')) {
+      chatId = part.slice('chat='.length);
+    } else if (!chatId && (part.startsWith('@') || /^-?\d{5,}$/.test(part))) {
+      chatId = part;
+    } else if (!memberStatus) {
+      memberStatus = part;
+    }
+  }
+
+  return {
+    isAuto: true,
+    metadata: remainder,
+    chatId,
+    memberStatus,
+  };
+}
+

@@ -32,6 +32,49 @@ export function registerUnauthorizedHandler(handler: () => void): () => void {
   };
 }
 
+async function executeAdminFetch<T>(
+  action: string,
+  payload: Record<string, unknown>,
+  accessToken: string,
+): Promise<{ status: number; data?: T; error?: StructuredApiError }> {
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/admin_api`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      apikey: SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action, ...payload }),
+  });
+
+  let parsed: ApiEnvelope<T>;
+  try {
+    parsed = (await response.json()) as ApiEnvelope<T>;
+  } catch {
+    return {
+      status: response.status,
+      error: new StructuredApiError(
+        `Admin API returned an invalid response (HTTP ${response.status}).`,
+        response.status === 401 ? 'INVALID_TOKEN' : 'INVALID_RESPONSE',
+        response.status,
+      ),
+    };
+  }
+
+  try {
+    const data = unwrapAdminApiResponse(parsed, response.status);
+    return { status: response.status, data };
+  } catch (err) {
+    return {
+      status: response.status,
+      error:
+        err instanceof StructuredApiError
+          ? err
+          : new StructuredApiError('Unexpected API error occurred.', 'UNKNOWN_API_ERROR', response.status),
+    };
+  }
+}
+
 export async function callAdminApi<T>(
   action: string,
   payload: Record<string, unknown> = {},
@@ -50,41 +93,38 @@ export async function callAdminApi<T>(
     );
   }
 
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/admin_api`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-      apikey: SUPABASE_ANON_KEY,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ action, ...payload }),
-  });
-
-  let parsed: ApiEnvelope<T>;
-  try {
-    parsed = (await response.json()) as ApiEnvelope<T>;
-  } catch {
-    if (response.status === 401 && unauthorizedHandler) {
-      unauthorizedHandler();
-    }
-    throw new StructuredApiError(
-      `Admin API returned an invalid response (HTTP ${response.status}).`,
-      response.status === 401 ? 'INVALID_TOKEN' : 'INVALID_RESPONSE',
-      response.status,
-    );
+  const initial = await executeAdminFetch<T>(action, payload, session.access_token);
+  if (!initial.error && initial.data !== undefined) {
+    return initial.data;
   }
 
-  try {
-    return unwrapAdminApiResponse(parsed, response.status);
-  } catch (err) {
-    if (
-      err instanceof StructuredApiError &&
-      (err.status === 401 || err.code === 'INVALID_TOKEN')
-    ) {
-      if (unauthorizedHandler) unauthorizedHandler();
-    }
-    throw err;
+  const isInitialUnauthorized =
+    initial.status === 401 || initial.error?.code === 'INVALID_TOKEN';
+
+  if (!isInitialUnauthorized) {
+    throw initial.error!;
   }
+
+  const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+  if (refreshError || !refreshed.session?.access_token) {
+    if (unauthorizedHandler) unauthorizedHandler();
+    throw initial.error!;
+  }
+
+  const retried = await executeAdminFetch<T>(action, payload, refreshed.session.access_token);
+  if (!retried.error && retried.data !== undefined) {
+    return retried.data;
+  }
+
+  if (
+    retried.status === 401 ||
+    retried.status === 403 ||
+    retried.error?.code === 'INVALID_TOKEN'
+  ) {
+    if (unauthorizedHandler) unauthorizedHandler();
+  }
+
+  throw retried.error!;
 }
 
 export const adminApi = {
@@ -133,8 +173,10 @@ export const adminApi = {
     reward: number;
     maxCompletions: number;
     targetUrl: string;
-    jobLength?: string;
+    jobLength?: number | string;
     proofInstructions?: string;
+    verificationType?: 'manual_screenshot' | 'auto_telegram_join';
+    verificationChatId?: string;
   }) => callAdminApi<{ task: MicroTask }>('create_task', params),
 
   updateTaskStatus: (params: {

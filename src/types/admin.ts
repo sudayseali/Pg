@@ -118,6 +118,8 @@ export interface PaginatedWithdrawalsResponse {
   limit: number;
 }
 
+export type TaskVerificationType = 'manual_screenshot' | 'auto_telegram_join';
+
 export interface MicroTask {
   id: string;
   title: string;
@@ -125,10 +127,13 @@ export interface MicroTask {
   category: string;
   reward: number;
   max_completions: number;
-  completions_count: number;
+  current_completions?: number;
+  completions_count?: number;
   target_url: string;
-  job_length?: string;
+  job_length?: string | number;
   proof_instructions?: string;
+  verification_type?: TaskVerificationType;
+  verification_chat_id?: string | null;
   status: 'active' | 'paused' | 'completed' | 'archived';
   created_at: string;
 }
@@ -143,6 +148,7 @@ export interface TaskSubmission {
   first_name?: string | null;
   telegram_id?: string | number | null;
   proof_text?: string | null;
+  proof_data?: string | null;
   proof_url?: string | null;
   proof_signed_url?: string | null;
   status: 'pending' | 'approved' | 'rejected';
