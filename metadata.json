@@ -1,0 +1,6 @@
+{
+  "name": "Payvora Admin Console",
+  "description": "Operations and financial administration console for Payvora withdrawals, micro-tasks, custom offerwalls, anti-fraud controls, and audit logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
