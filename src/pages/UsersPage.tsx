@@ -191,7 +191,7 @@ export function UsersPage() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Username, first name, or TG ID"
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#0F172A] pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#0B1120] pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
             />
           </div>
           <button
@@ -203,7 +203,7 @@ export function UsersPage() {
         </form>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+      <div className="overflow-hidden fintech-card rounded-xl">
         {loading ? (
           <TableSkeleton rows={6} cols={6} />
         ) : users.length === 0 ? (
@@ -213,7 +213,7 @@ export function UsersPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+              <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                 <tr>
                   <th className="px-5 py-3">User</th>
                   <th className="px-5 py-3">Telegram ID</th>
@@ -330,7 +330,7 @@ export function UsersPage() {
               value={statusReason}
               onChange={(e) => setStatusReason(e.target.value)}
               placeholder="Multi-account abuse or manual compliance release"
-              className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100"
+              className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100"
             />
           </div>
           <div className="flex justify-end gap-3">
@@ -385,7 +385,7 @@ export function UsersPage() {
               className={`h-10 rounded-lg border text-xs font-semibold transition-colors ${
                 balanceType === 'credit'
                   ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300'
-                  : 'border-slate-800 bg-[#070B19] text-slate-400'
+                  : 'border-slate-800 bg-[#060913] text-slate-400'
               }`}
             >
               Credit (+ USD)
@@ -397,7 +397,7 @@ export function UsersPage() {
               className={`h-10 rounded-lg border text-xs font-semibold transition-colors ${
                 balanceType === 'deduct'
                   ? 'border-red-500/50 bg-red-500/15 text-red-300'
-                  : 'border-slate-800 bg-[#070B19] text-slate-400'
+                  : 'border-slate-800 bg-[#060913] text-slate-400'
               }`}
             >
               Deduct (- USD)
@@ -420,7 +420,7 @@ export function UsersPage() {
                 setBalanceError(null);
               }}
               placeholder="5.00"
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
             />
           </div>
 
@@ -438,11 +438,11 @@ export function UsersPage() {
                 setBalanceError(null);
               }}
               placeholder="Manual compensation for ticket #1042"
-              className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100 disabled:opacity-60"
+              className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100 disabled:opacity-60"
             />
           </div>
 
-          <div className="rounded-lg border border-slate-800 bg-[#070B19] px-3 py-2 font-mono text-[11px] text-slate-400">
+          <div className="rounded-lg border border-slate-800 bg-[#060913] px-3 py-2 font-mono text-[11px] text-slate-400">
             Idempotency Key: {idempotencyKey}
           </div>
 

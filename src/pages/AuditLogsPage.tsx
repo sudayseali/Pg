@@ -61,7 +61,7 @@ export function AuditLogsPage() {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+      <div className="fintech-card overflow-hidden rounded-xl">
         {loading ? (
           <TableSkeleton rows={8} cols={5} />
         ) : logs.length === 0 ? (
@@ -71,7 +71,7 @@ export function AuditLogsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+              <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                 <tr>
                   <th className="w-10 px-4 py-3" />
                   <th className="px-4 py-3">Action</th>
@@ -117,9 +117,9 @@ export function AuditLogsPage() {
                         </td>
                       </tr>
                       {expanded ? (
-                        <tr className="bg-[#070B19]">
+                        <tr className="bg-[#060913]/80">
                           <td colSpan={5} className="px-6 py-4">
-                            <pre className="overflow-x-auto rounded-lg border border-slate-800 bg-[#0B1122] p-3 font-mono text-xs text-slate-300">
+                            <pre className="overflow-x-auto rounded-lg border border-slate-800 bg-[#060913] p-3 font-mono text-xs text-slate-300">
                               {JSON.stringify(log.details ?? {}, null, 2)}
                             </pre>
                           </td>

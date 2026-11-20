@@ -437,7 +437,7 @@ export function OffersPage() {
       </div>
 
       {/* Sub-navigation */}
-      <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-800 bg-[#0F172A] p-1">
+      <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-800 bg-[#0B1120] p-1">
         {tabs
           .filter((t) => t.visible)
           .map((t) => (
@@ -465,7 +465,7 @@ export function OffersPage() {
             </div>
           ) : analytics ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5">
+              <div className="fintech-card rounded-xl p-5">
                 <p className="text-xs text-slate-400">Total Provider Payout</p>
                 <p className="mt-2 font-mono text-2xl font-semibold tabular-nums text-slate-100">
                   {formatUsd(analytics.totalProviderPayout)}
@@ -475,7 +475,7 @@ export function OffersPage() {
                   {formatNumber(analytics.totalClicks)} clicks
                 </p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5">
+              <div className="fintech-card rounded-xl p-5">
                 <p className="text-xs text-slate-400">Total User Rewards</p>
                 <p className="mt-2 font-mono text-2xl font-semibold tabular-nums text-slate-100">
                   {formatUsd(analytics.totalUserRewards)}
@@ -484,14 +484,14 @@ export function OffersPage() {
                   {formatNumber(analytics.activeOffers)} active offers live
                 </p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5">
+              <div className="fintech-card rounded-xl p-5">
                 <p className="text-xs text-slate-400">Net Payvora Margin</p>
                 <p className="mt-2 font-mono text-2xl font-semibold tabular-nums text-emerald-400">
                   {formatUsd(analytics.totalNetMargin)}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">Post-commission profit</p>
               </div>
-              <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5">
+              <div className="fintech-card rounded-xl p-5">
                 <p className="text-xs text-slate-400">Reversal Rate & Disputes</p>
                 <p className="mt-2 font-mono text-2xl font-semibold tabular-nums text-slate-100">
                   {formatPercent(analytics.reversalRatePercent)}
@@ -505,7 +505,7 @@ export function OffersPage() {
 
           <form
             onSubmit={(e) => void handleSaveCommission(e)}
-            className="rounded-xl border border-slate-800 bg-[#0F172A] p-6"
+            className="fintech-card rounded-xl p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
               <div>
@@ -543,7 +543,7 @@ export function OffersPage() {
                       default_user_share_percent: Number.parseFloat(e.target.value) || 0,
                     }))
                   }
-                  className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
+                  className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
                 />
               </div>
               <div>
@@ -566,7 +566,7 @@ export function OffersPage() {
                       min_user_reward_usd: Number.parseFloat(e.target.value) || 0,
                     }))
                   }
-                  className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
+                  className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
                 />
               </div>
               <div>
@@ -589,7 +589,7 @@ export function OffersPage() {
                       max_user_reward_usd: Number.parseFloat(e.target.value) || 0,
                     }))
                   }
-                  className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
+                  className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 disabled:opacity-60"
                 />
               </div>
             </div>
@@ -629,7 +629,7 @@ export function OffersPage() {
                             return { ...c, provider_user_share_overrides: next };
                           });
                         }}
-                        className="h-9 w-full rounded-lg border border-slate-800 bg-[#070B19] px-2.5 font-mono text-xs text-slate-100 disabled:opacity-60"
+                        className="h-9 w-full rounded-lg border border-slate-800 bg-[#060913] px-2.5 font-mono text-xs text-slate-100 disabled:opacity-60"
                       />
                     </div>
                   ))}
@@ -655,7 +655,7 @@ export function OffersPage() {
       {/* 2. PARTNER PROVIDERS & SYNC */}
       {subTab === 'providers' ? (
         <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-800 bg-[#0F172A] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 fintech-card rounded-xl p-4">
             <div className="flex items-center gap-3">
               <label htmlFor="sync-country" className="text-xs font-medium text-slate-300">
                 Sync Country Code
@@ -666,7 +666,7 @@ export function OffersPage() {
                 maxLength={2}
                 value={syncCountry}
                 onChange={(e) => setSyncCountry(e.target.value.toUpperCase())}
-                className="h-9 w-20 rounded-lg border border-slate-800 bg-[#070B19] px-2.5 text-center font-mono text-xs uppercase text-slate-100"
+                className="h-9 w-20 rounded-lg border border-slate-800 bg-[#060913] px-2.5 text-center font-mono text-xs uppercase text-slate-100"
               />
             </div>
 
@@ -687,13 +687,13 @@ export function OffersPage() {
             ) : null}
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+          <div className="overflow-hidden fintech-card rounded-xl">
             {providersLoading ? (
               <TableSkeleton rows={8} cols={6} />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+                  <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                     <tr>
                       <th className="px-5 py-3">Partner</th>
                       <th className="px-5 py-3">Readiness & Secrets</th>
@@ -849,7 +849,7 @@ export function OffersPage() {
           </div>
 
           {/* Sync Logs */}
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+          <div className="overflow-hidden fintech-card rounded-xl">
             <div className="border-b border-slate-800/80 px-5 py-3.5">
               <h2 className="text-sm font-semibold text-slate-100">Provider Sync Logs</h2>
             </div>
@@ -860,7 +860,7 @@ export function OffersPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-slate-800/80 bg-[#0B1122] text-slate-400">
+                  <thead className="border-b border-slate-800/80 bg-[#060913] text-slate-400">
                     <tr>
                       <th className="px-5 py-2.5">Provider</th>
                       <th className="px-5 py-2.5">Status</th>
@@ -913,7 +913,7 @@ export function OffersPage() {
                   setOfferPage(1);
                 }}
                 placeholder="Search synced offers by title or provider..."
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#0F172A] pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#0B1120] pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <input
@@ -924,11 +924,11 @@ export function OffersPage() {
                 setOfferPage(1);
               }}
               placeholder="Filter category (e.g. game, survey)"
-              className="h-10 w-56 rounded-lg border border-slate-800 bg-[#0F172A] px-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+              className="h-10 w-56 rounded-lg border border-slate-800 bg-[#0B1120] px-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+          <div className="overflow-hidden fintech-card rounded-xl">
             {offersLoading ? (
               <TableSkeleton rows={6} cols={6} />
             ) : offers.length === 0 ? (
@@ -938,7 +938,7 @@ export function OffersPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+                  <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                     <tr>
                       <th className="px-5 py-3">Offer</th>
                       <th className="px-5 py-3">Provider / Category</th>
@@ -1019,7 +1019,7 @@ export function OffersPage() {
       {/* 4. CONVERSIONS & POSTBACKS */}
       {subTab === 'conversions' ? (
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+          <div className="overflow-hidden fintech-card rounded-xl">
             <div className="border-b border-slate-800/80 px-5 py-3.5">
               <h2 className="text-sm font-semibold text-slate-100">Offer Completions</h2>
             </div>
@@ -1032,7 +1032,7 @@ export function OffersPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-slate-800/80 bg-[#0B1122] text-slate-400">
+                  <thead className="border-b border-slate-800/80 bg-[#060913] text-slate-400">
                     <tr>
                       <th className="px-5 py-3">Offer / Provider</th>
                       <th className="px-5 py-3">User</th>
@@ -1082,7 +1082,7 @@ export function OffersPage() {
             )}
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+          <div className="overflow-hidden fintech-card rounded-xl">
             <div className="border-b border-slate-800/80 px-5 py-3.5">
               <h2 className="text-sm font-semibold text-slate-100">
                 Raw Provider Postbacks & Signature Audit
@@ -1097,7 +1097,7 @@ export function OffersPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-slate-800/80 bg-[#0B1122] text-slate-400">
+                  <thead className="border-b border-slate-800/80 bg-[#060913] text-slate-400">
                     <tr>
                       <th className="px-5 py-3">Provider</th>
                       <th className="px-5 py-3">External Tx ID</th>
@@ -1150,7 +1150,7 @@ export function OffersPage() {
       {/* 5. DISPUTES */}
       {subTab === 'disputes' && canReviewDisputes ? (
         <div className="space-y-4">
-          <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0F172A] p-1 w-fit">
+          <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0B1120] p-1 w-fit">
             {(['open', 'investigating', 'resolved', 'rejected', 'all'] as const).map((s) => (
               <button
                 key={s}
@@ -1167,7 +1167,7 @@ export function OffersPage() {
             ))}
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+          <div className="overflow-hidden fintech-card rounded-xl">
             {disputesLoading ? (
               <TableSkeleton rows={5} cols={5} />
             ) : disputes.length === 0 ? (
@@ -1177,7 +1177,7 @@ export function OffersPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+                  <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                     <tr>
                       <th className="px-5 py-3">User</th>
                       <th className="px-5 py-3">Offer / Provider</th>
@@ -1254,7 +1254,7 @@ export function OffersPage() {
                 id="prov-status"
                 value={providerForm.status}
                 onChange={(e) => setProviderForm((f) => ({ ...f, status: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100"
               >
                 <option value="active">Active</option>
                 <option value="paused">Paused</option>
@@ -1276,7 +1276,7 @@ export function OffersPage() {
                 onChange={(e) =>
                   setProviderForm((f) => ({ ...f, commissionOverridePercent: e.target.value }))
                 }
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100"
               />
             </div>
           </div>
@@ -1293,11 +1293,11 @@ export function OffersPage() {
                 setProviderForm((f) => ({ ...f, hostedWallUrlTemplate: e.target.value }))
               }
               placeholder="https://wall.provider.com/?uid={user_id}"
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-xs text-slate-100"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-xs text-slate-100"
             />
           </div>
 
-          <div className="space-y-2 rounded-lg border border-slate-800 bg-[#070B19] p-3.5 text-xs">
+          <div className="space-y-2 rounded-lg border border-slate-800 bg-[#060913] p-3.5 text-xs">
             <label className="flex items-center justify-between gap-2">
               <span className="text-slate-200">API Integration Enabled</span>
               <input
@@ -1371,7 +1371,7 @@ export function OffersPage() {
                   status: e.target.value as 'open' | 'investigating' | 'resolved' | 'rejected',
                 }))
               }
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100"
             >
               <option value="investigating">Investigating</option>
               <option value="resolved">Resolved</option>
@@ -1392,7 +1392,7 @@ export function OffersPage() {
                 placeholder="0.00 (leave blank for no credit)"
                 value={disputeForm.creditAmount}
                 onChange={(e) => setDisputeForm((f) => ({ ...f, creditAmount: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100"
               />
             </div>
           ) : null}
@@ -1408,7 +1408,7 @@ export function OffersPage() {
               value={disputeForm.adminNote}
               onChange={(e) => setDisputeForm((f) => ({ ...f, adminNote: e.target.value }))}
               placeholder="Verified completion with partner postback log"
-              className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100"
+              className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100"
             />
           </div>
 

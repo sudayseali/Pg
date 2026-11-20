@@ -147,7 +147,7 @@ export function WithdrawalsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0F172A] p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0B1120] p-1">
           {tabs.map((tab) => (
             <button
               key={tab.value}
@@ -174,7 +174,7 @@ export function WithdrawalsPage() {
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+      <div className="fintech-card overflow-hidden rounded-xl">
         {loading ? (
           <TableSkeleton rows={6} cols={6} />
         ) : withdrawals.length === 0 ? (
@@ -184,7 +184,7 @@ export function WithdrawalsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+              <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                 <tr>
                   <th className="px-5 py-3">User</th>
                   <th className="px-5 py-3">Method</th>
@@ -308,7 +308,7 @@ export function WithdrawalsPage() {
       >
         {approveTarget ? (
           <div className="space-y-4">
-            <div className="rounded-lg border border-slate-800 bg-[#070B19] p-3.5 text-xs">
+            <div className="rounded-lg border border-slate-800 bg-[#060913] p-3.5 text-xs">
               <div className="flex items-center justify-between gap-2 text-slate-400">
                 <span>Destination Address</span>
                 <CopyButton value={approveTarget.destination_address} />
@@ -331,7 +331,7 @@ export function WithdrawalsPage() {
                 value={txHash}
                 onChange={(e) => setTxHash(e.target.value)}
                 placeholder="0x... or TRON tx hash"
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -348,7 +348,7 @@ export function WithdrawalsPage() {
                 value={approveNote}
                 onChange={(e) => setApproveNote(e.target.value)}
                 placeholder="Processed via Treasury hot wallet"
-                className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -404,7 +404,7 @@ export function WithdrawalsPage() {
                   if (rejectError) setRejectError(null);
                 }}
                 placeholder="Invalid TRC20 destination address or failed compliance verification"
-                className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-red-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-red-500 focus:outline-none"
               />
               {rejectError ? <p className="mt-1.5 text-xs text-red-400">{rejectError}</p> : null}
             </div>

@@ -340,7 +340,7 @@ export function TasksPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0F172A] p-1">
+          <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0B1120] p-1">
             {canReviewSubmissions ? (
               <button
                 type="button"
@@ -383,7 +383,7 @@ export function TasksPage() {
       </div>
 
       {subTab === 'tasks' && canManageTasks ? (
-        <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+        <div className="overflow-hidden fintech-card rounded-xl">
           {tasksLoading ? (
             <TableSkeleton rows={5} cols={5} />
           ) : tasks.length === 0 ? (
@@ -401,7 +401,7 @@ export function TasksPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+                <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                   <tr>
                     <th className="px-5 py-3">Task</th>
                     <th className="px-5 py-3">Category</th>
@@ -529,7 +529,7 @@ export function TasksPage() {
       ) : (
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0F172A] p-1">
+            <div className="flex items-center gap-1 rounded-lg border border-slate-800 bg-[#0B1120] p-1">
               {(['pending', 'approved', 'rejected', 'all'] as SubmissionFilter[]).map((f) => (
                 <button
                   key={f}
@@ -552,7 +552,7 @@ export function TasksPage() {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             {/* Queue List */}
-            <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A] lg:col-span-7">
+            <div className="overflow-hidden fintech-card rounded-xl lg:col-span-7">
               {subsLoading ? (
                 <TableSkeleton rows={6} cols={4} />
               ) : submissions.length === 0 ? (
@@ -609,7 +609,7 @@ export function TasksPage() {
             </div>
 
             {/* Side-by-Side Proof Viewer */}
-            <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5 lg:col-span-5">
+            <div className="fintech-card rounded-xl p-5 lg:col-span-5">
               {selectedSub ? (
                 <div className="space-y-4">
                   <div className="flex items-start justify-between gap-3 border-b border-slate-800/80 pb-4">
@@ -625,7 +625,7 @@ export function TasksPage() {
                   </div>
 
                   {/* Proof Media / Text */}
-                  <div className="rounded-lg border border-slate-800 bg-[#070B19] p-4">
+                  <div className="rounded-lg border border-slate-800 bg-[#060913] p-4">
                     <p className="mb-2 text-xs font-medium text-slate-400">Submitted Proof</p>
                     {autoProof.isAuto ? (
                       <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs">
@@ -716,7 +716,7 @@ export function TasksPage() {
                           value={reviewComment}
                           onChange={(e) => setReviewComment(e.target.value)}
                           placeholder="Verification note sent to user on rejection or approval"
-                          className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
+                          className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
@@ -741,7 +741,7 @@ export function TasksPage() {
                       </div>
                     </div>
                   ) : selectedSub.admin_comment ? (
-                    <div className="rounded-lg border border-slate-800 bg-[#070B19] p-3 text-xs text-slate-300">
+                    <div className="rounded-lg border border-slate-800 bg-[#060913] p-3 text-xs text-slate-300">
                       <span className="font-medium text-slate-400">Admin Note: </span>
                       {selectedSub.admin_comment}
                     </div>
@@ -777,7 +777,7 @@ export function TasksPage() {
               value={taskForm.title}
               onChange={(e) => setTaskForm((p) => ({ ...p, title: e.target.value }))}
               placeholder="Follow Payvora Official Channel"
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
@@ -794,7 +794,7 @@ export function TasksPage() {
               onChange={(e) =>
                 handleVerificationTypeChange(e.target.value as TaskVerificationType)
               }
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
             >
               <option value="manual_screenshot">Manual Screenshot Review</option>
               <option value="auto_telegram_join">
@@ -821,7 +821,7 @@ export function TasksPage() {
                   if (chatIdError) setChatIdError(null);
                 }}
                 placeholder="@PayvoraCommunity or -1001234567890"
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
               />
               {chatIdError ? <p className="text-xs text-red-400">{chatIdError}</p> : null}
               <p className="text-[11px] leading-relaxed text-slate-400">
@@ -846,7 +846,7 @@ export function TasksPage() {
                 type="text"
                 value={taskForm.category}
                 onChange={(e) => setTaskForm((p) => ({ ...p, category: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
@@ -859,7 +859,7 @@ export function TasksPage() {
                 min="1"
                 value={taskForm.jobLength}
                 onChange={(e) => setTaskForm((p) => ({ ...p, jobLength: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -877,7 +877,7 @@ export function TasksPage() {
                 min="0.01"
                 value={taskForm.reward}
                 onChange={(e) => setTaskForm((p) => ({ ...p, reward: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
@@ -891,7 +891,7 @@ export function TasksPage() {
                 min="1"
                 value={taskForm.maxCompletions}
                 onChange={(e) => setTaskForm((p) => ({ ...p, maxCompletions: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -907,7 +907,7 @@ export function TasksPage() {
               value={taskForm.targetUrl}
               onChange={(e) => setTaskForm((p) => ({ ...p, targetUrl: e.target.value }))}
               placeholder="https://t.me/payvora"
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
@@ -922,7 +922,7 @@ export function TasksPage() {
               value={taskForm.description}
               onChange={(e) => setTaskForm((p) => ({ ...p, description: e.target.value }))}
               placeholder="Clear instructions describing what the user must complete"
-              className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
@@ -947,11 +947,11 @@ export function TasksPage() {
                 type="text"
                 value={taskForm.proofInstructions}
                 onChange={(e) => setTaskForm((p) => ({ ...p, proofInstructions: e.target.value }))}
-                className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </div>
           ) : (
-            <div className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#070B19] px-3 py-2 text-xs text-slate-400">
+            <div className="flex items-center justify-between rounded-lg border border-slate-800/80 bg-[#060913] px-3 py-2 text-xs text-slate-400">
               <span>Bot verification prompt defaulted automatically.</span>
               <button
                 type="button"

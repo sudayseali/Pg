@@ -20,7 +20,7 @@ export function CopyButton({ value, label }: { value: string; label?: string }) 
       onClick={handleCopy}
       aria-label={label ?? `Copy ${value}`}
       title={copied ? 'Copied' : 'Copy to clipboard'}
-      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded border border-slate-800 bg-[#070B19] text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-100"
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded border border-slate-800 bg-[#060913] text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-100"
     >
       {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
     </button>

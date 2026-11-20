@@ -24,11 +24,11 @@ const STATUS_MAP: Record<string, { label: string; tone: Tone; icon: typeof Check
 };
 
 const TONE_CLASSES: Record<Tone, string> = {
-  emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25',
+  emerald: 'text-emerald-300 bg-emerald-500/10 border-emerald-500/25',
   amber: 'text-amber-300 bg-amber-500/10 border-amber-500/25',
-  red: 'text-red-400 bg-red-500/10 border-red-500/25',
-  blue: 'text-blue-400 bg-blue-500/10 border-blue-500/25',
-  slate: 'text-slate-300 bg-slate-800/80 border-slate-700',
+  red: 'text-red-300 bg-red-500/10 border-red-500/25',
+  blue: 'text-blue-300 bg-blue-500/10 border-blue-500/25',
+  slate: 'text-slate-300 bg-slate-800/70 border-slate-700/80',
 };
 
 export function StatusBadge({
@@ -48,7 +48,7 @@ export function StatusBadge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium whitespace-nowrap ${TONE_CLASSES[mapped.tone]}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap ${TONE_CLASSES[mapped.tone]}`}
     >
       <Icon className="h-3 w-3 shrink-0" aria-hidden="true" />
       <span>{labelOverride ?? mapped.label}</span>

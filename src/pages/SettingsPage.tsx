@@ -97,7 +97,7 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+      <div className="fintech-card overflow-hidden rounded-xl">
         {loading ? (
           <TableSkeleton rows={6} cols={4} />
         ) : settings.length === 0 ? (
@@ -133,7 +133,7 @@ export function SettingsPage() {
                         onChange={(e) =>
                           setDrafts((prev) => ({ ...prev, [item.key]: e.target.value }))
                         }
-                        className="w-full rounded-lg border border-slate-800 bg-[#070B19] p-3 font-mono text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+                        className="w-full rounded-lg border border-slate-800 bg-[#060913] p-3 font-mono text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
                       />
                     ) : (
                       <input
@@ -143,7 +143,7 @@ export function SettingsPage() {
                         onChange={(e) =>
                           setDrafts((prev) => ({ ...prev, [item.key]: e.target.value }))
                         }
-                        className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+                        className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
                       />
                     )}
                   </div>

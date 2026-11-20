@@ -105,7 +105,7 @@ export function AdminsPage() {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+      <div className="fintech-card overflow-hidden rounded-xl">
         {loading ? (
           <TableSkeleton rows={5} cols={5} />
         ) : admins.length === 0 ? (
@@ -115,7 +115,7 @@ export function AdminsPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-800/80 bg-[#0B1122] text-xs font-medium text-slate-400">
+              <thead className="border-b border-slate-800/80 bg-[#060913] text-xs font-medium text-slate-400">
                 <tr>
                   <th className="px-5 py-3">Administrator</th>
                   <th className="px-5 py-3">Role</th>
@@ -187,7 +187,7 @@ export function AdminsPage() {
               id="adm-role"
               value={nextRole}
               onChange={(e) => setNextRole(e.target.value as AdminRole)}
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100"
             >
               {ROLES.map((r) => (
                 <option key={r} value={r}>
@@ -207,7 +207,7 @@ export function AdminsPage() {
               onChange={(e) =>
                 setNextStatus(e.target.value as 'active' | 'inactive' | 'suspended')
               }
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 text-sm text-slate-100"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 text-sm text-slate-100"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>

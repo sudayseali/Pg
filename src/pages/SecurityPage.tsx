@@ -144,7 +144,7 @@ export function SecurityPage() {
 
       {/* Secrets Status Strip */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-4">
+        <div className="fintech-card rounded-xl p-4">
           <p className="text-xs text-slate-400">PROXYCHECK_KEY</p>
           <div className="mt-2 flex items-center gap-2 text-sm font-medium">
             {secretsStatus.proxycheckConfigured ? (
@@ -160,7 +160,7 @@ export function SecurityPage() {
             )}
           </div>
         </div>
-        <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-4">
+        <div className="fintech-card rounded-xl p-4">
           <p className="text-xs text-slate-400">IPAPI_KEY</p>
           <div className="mt-2 flex items-center gap-2 text-sm font-medium">
             {secretsStatus.ipapiConfigured ? (
@@ -176,7 +176,7 @@ export function SecurityPage() {
             )}
           </div>
         </div>
-        <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-4">
+        <div className="fintech-card rounded-xl p-4">
           <p className="text-xs text-slate-400">Engine Readiness</p>
           <div className="mt-2 flex items-center gap-2 text-sm font-medium">
             {secretsStatus.anyConfigured ? (
@@ -197,7 +197,7 @@ export function SecurityPage() {
       {/* Config Form */}
       <form
         onSubmit={(e) => void handleSave(e)}
-        className="rounded-xl border border-slate-800 bg-[#0F172A] p-6"
+        className="fintech-card rounded-xl p-6"
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {switches.map((sw) => {
@@ -205,7 +205,7 @@ export function SecurityPage() {
             return (
               <label
                 key={sw.key}
-                className="flex cursor-pointer items-start justify-between gap-4 rounded-lg border border-slate-800 bg-[#070B19] p-4 transition-colors hover:border-slate-700"
+                className="flex cursor-pointer items-start justify-between gap-4 rounded-lg border border-slate-800 bg-[#060913] p-4 transition-colors hover:border-slate-700"
               >
                 <div>
                   <p className="text-sm font-medium text-slate-100">{sw.label}</p>
@@ -274,7 +274,7 @@ export function SecurityPage() {
                   max_daily_withdrawals: Number.parseInt(e.target.value, 10) || 1,
                 }))
               }
-              className="h-10 w-full rounded-lg border border-slate-800 bg-[#070B19] px-3 font-mono text-sm text-slate-100"
+              className="h-10 w-full rounded-lg border border-slate-800 bg-[#060913] px-3 font-mono text-sm text-slate-100"
             />
           </div>
         </div>
@@ -291,7 +291,7 @@ export function SecurityPage() {
       </form>
 
       {/* Recent VPN Blocks */}
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A]">
+      <div className="overflow-hidden fintech-card rounded-xl">
         <div className="border-b border-slate-800/80 px-5 py-3.5">
           <h2 className="text-sm font-semibold text-slate-100">Recent VPN & Proxy Blocks</h2>
         </div>
@@ -304,7 +304,7 @@ export function SecurityPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800/80 bg-[#0B1122] text-slate-400">
+              <thead className="border-b border-slate-800/80 bg-[#060913] text-slate-400">
                 <tr>
                   <th className="px-5 py-3">User</th>
                   <th className="px-5 py-3">IP Address</th>

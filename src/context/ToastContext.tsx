@@ -44,10 +44,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((toast) => {
           const borderColor =
             toast.variant === 'success'
-              ? 'border-emerald-500/40 bg-[#0F172A]'
+              ? 'border-emerald-500/40 bg-[#0B1120]'
               : toast.variant === 'error'
-                ? 'border-red-500/40 bg-[#0F172A]'
-                : 'border-blue-500/40 bg-[#0F172A]';
+                ? 'border-red-500/40 bg-[#0B1120]'
+                : 'border-blue-500/40 bg-[#0B1120]';
 
           return (
             <div

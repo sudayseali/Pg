@@ -11,7 +11,7 @@ export function AccessDenied({
   required?: string;
 }) {
   return (
-    <div className="mx-auto my-12 max-w-lg rounded-xl border border-red-500/25 bg-[#0F172A] p-8 text-center">
+    <div className="mx-auto my-12 max-w-lg rounded-xl border border-red-500/25 bg-[#0B1120] p-8 text-center shadow-[0_1px_2px_0_rgba(0,0,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.04)]">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10 text-red-400">
         <ShieldOff className="h-6 w-6" />
       </div>
