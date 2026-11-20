@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, AlertCircle, Lock, Mail, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { isSupabaseConfigured, SUPABASE_URL } from '../lib/supabase';
+import { isSupabaseConfigured } from '../lib/supabase';
 import { isRejectedTelegramEmail } from '../lib/formatters';
 
 export function LoginPage() {
@@ -79,7 +79,7 @@ export function LoginPage() {
                 <p className="font-semibold text-amber-300">Environment Configuration Required</p>
                 <p className="mt-1 leading-relaxed text-amber-200/80">
                   Set <span className="font-mono">VITE_SUPABASE_ANON_KEY</span> in your environment
-                  to connect to <span className="font-mono break-all">{SUPABASE_URL}</span>.
+                  to connect to the backend.
                 </p>
               </div>
             </div>
@@ -164,7 +164,7 @@ export function LoginPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-slate-500">
-          Protected endpoint · <span className="font-mono">{SUPABASE_URL}</span>
+          Authorized Payvora administrator access only
         </p>
       </div>
     </div>
