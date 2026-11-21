@@ -73,11 +73,11 @@ export function LoginPage() {
   ];
 
   return (
-    <div className="relative flex min-h-screen bg-[#060913] text-slate-100">
+    <div className="fintech-grid-bg relative flex min-h-screen bg-[#050914] text-slate-100">
       {/* Subtle top ambient gradient */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_75%_60%_at_50%_-15%,rgba(59,130,246,0.12),transparent)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[440px] bg-[radial-gradient(ellipse_75%_60%_at_50%_-15%,rgba(56,189,248,0.14),transparent)]"
       />
 
       <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-4 py-10 sm:px-6 lg:grid-cols-12 lg:px-10">
@@ -86,8 +86,8 @@ export function LoginPage() {
           <div>
             <div className="flex items-center gap-3">
               <BrandMark size="md" />
-              <span className="text-lg font-bold tracking-tight text-slate-100">
-                Payvora Operations
+              <span className="text-lg font-bold tracking-[0.04em] text-slate-50">
+                PAYVORA OPERATIONS
               </span>
             </div>
 

@@ -8,7 +8,7 @@ const STATUS_MAP: Record<string, { label: string; tone: Tone; icon: typeof Check
   resolved: { label: 'Resolved', tone: 'emerald', icon: CheckCircle2 },
   success: { label: 'Success', tone: 'emerald', icon: CheckCircle2 },
   valid: { label: 'Valid', tone: 'emerald', icon: CheckCircle2 },
-  completed: { label: 'Completed', tone: 'blue', icon: CheckCircle2 },
+  completed: { label: 'Completed', tone: 'emerald', icon: CheckCircle2 },
   credited: { label: 'Credited', tone: 'emerald', icon: CheckCircle2 },
   pending: { label: 'Pending', tone: 'amber', icon: Clock },
   open: { label: 'Open', tone: 'amber', icon: AlertTriangle },

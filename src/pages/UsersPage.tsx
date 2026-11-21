@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DollarSign, Search, ShieldAlert, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -20,17 +21,26 @@ import type { AppUser } from '../types/admin';
 export function UsersPage() {
   const { admin, refreshAdminData } = useAuth();
   const { pushToast } = useToast();
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') ?? '';
 
   const canManageUsers = hasPermission(admin?.role, 'manage_users');
   const canManageBalances = hasPermission(admin?.role, 'manage_balances');
 
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState(initialQuery);
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [page, setPage] = useState(1);
   const limit = 20;
   const [users, setUsers] = useState<AppUser[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const qParam = searchParams.get('q') ?? '';
+    setSearchInput(qParam);
+    setSearchQuery(qParam);
+    setPage(1);
+  }, [searchParams]);
 
   // Status modal
   const [statusTarget, setStatusTarget] = useState<AppUser | null>(null);

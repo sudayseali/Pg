@@ -170,3 +170,80 @@ test('Job length parser and auto_telegram_join proof parser extract structured m
   assert.equal(parsedKv.chatId, '-1001234567890');
   assert.equal(parsedKv.memberStatus, 'administrator');
 });
+
+import {
+  buildDailyActivitySeries,
+  buildSmoothSvgPath,
+  getTransactionBadgeMeta,
+} from './activityChart';
+
+test('Activity chart aggregates credits vs payouts accurately across 7D window', () => {
+  const refNow = new Date('2026-11-21T12:00:00Z');
+  const summary = buildDailyActivitySeries(
+    [
+      {
+        id: 'tx-1',
+        type: 'withdrawal',
+        amount: -50,
+        created_at: '2026-11-21T10:00:00Z',
+      },
+      {
+        id: 'tx-2',
+        type: 'task_reward',
+        amount: 12.5,
+        created_at: '2026-11-21T08:00:00Z',
+      },
+      {
+        id: 'tx-3',
+        type: 'offer_reward',
+        amount: 25,
+        created_at: '2026-11-19T14:00:00Z',
+      },
+      {
+        id: 'tx-old',
+        type: 'task_reward',
+        amount: 100,
+        created_at: '2026-10-01T14:00:00Z',
+      },
+    ],
+    '7D',
+    refNow,
+  );
+
+  assert.equal(summary.points.length, 7);
+  assert.equal(summary.hasAnyActivity, true);
+  assert.equal(summary.totalRevenue, 37.5);
+  assert.equal(summary.totalPayouts, 50);
+  assert.equal(summary.maxValue, 50);
+
+  const nov21 = summary.points[6];
+  assert.equal(nov21.dateKey, '2026-11-21');
+  assert.equal(nov21.revenue, 12.5);
+  assert.equal(nov21.payouts, 50);
+});
+
+test('SVG path generator and transaction badge classifier produce deterministic outputs', () => {
+  const path = buildSmoothSvgPath([
+    { x: 0, y: 100 },
+    { x: 50, y: 40 },
+    { x: 100, y: 20 },
+  ]);
+  assert.ok(path.startsWith('M 0.00 100.00 C'));
+
+  assert.deepEqual(getTransactionBadgeMeta('withdrawal', -50), {
+    label: 'Withdrawal',
+    tone: 'blue',
+    isOutflow: true,
+  });
+  assert.deepEqual(getTransactionBadgeMeta('task_reward', 1.2), {
+    label: 'Task Reward',
+    tone: 'emerald',
+    isOutflow: false,
+  });
+  assert.deepEqual(getTransactionBadgeMeta('offer_reward', 2.5), {
+    label: 'Offer Reward',
+    tone: 'violet',
+    isOutflow: false,
+  });
+});
+

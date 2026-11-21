@@ -19,7 +19,7 @@ function ProtectedShell({ children }: { children: React.ReactNode }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#060913]">
+      <div className="flex min-h-screen items-center justify-center bg-[#050914]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-blue-500" />
           <p className="text-xs font-medium text-slate-400">Verifying administrator session...</p>
